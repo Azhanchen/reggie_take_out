@@ -9,14 +9,14 @@ spring:
       master:
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://192.168.100.100:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+        url: jdbc:mysql://192.168.100.129:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
         username: root
         password: root
       # 从数据源
       slave:
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://192.168.100.101:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+        url: jdbc:mysql://192.168.100.130:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
         username: root
         password: root
     masterslave:
@@ -64,6 +64,7 @@ mybatis-plus:
       id-type: ASSIGN_ID
 
 reggie:
-  path: D:\资料\8、黑马程序员瑞吉外卖平台实战开发\transferTo\
+#  path: D:\资料\8、黑马程序员瑞吉外卖平台实战开发\transferTo\
+  path: D:\资料\8、黑马程序员瑞吉外卖平台实战开发\瑞吉外卖-资料\1 瑞吉外卖项目\1 瑞吉外卖项目\资料\图片资源\
 
 
