@@ -16,7 +16,7 @@
         <div class="tableBar">
             <el-input
                     v-model="input"
-                    placeholder="请输入菜品名称"
+                    placeholder="请输入体检项目名称"
                     style="width: 250px"
                     clearable
                     @keyup.enter.native="handleQuery"
@@ -36,7 +36,7 @@
                         type="primary"
                         @click="addFoodtype('add')"
                 >
-                    + 新建菜品
+                    + 新建体检项目
                 </el-button>
             </div>
         </div>
@@ -52,7 +52,7 @@
             ></el-table-column>
             <el-table-column
                     prop="name"
-                    label="菜品名称"
+                    label="体检项目名称"
             ></el-table-column>
             <el-table-column prop="image" label="图片" align="center">
                 <template slot-scope="{ row }">
@@ -67,16 +67,16 @@
             </el-table-column>
             <el-table-column
                     prop="categoryName"
-                    label="菜品分类"
+                    label="项目分类"
             ></el-table-column>
-            <el-table-column label="售价">
+            <el-table-column label="价格">
                 <template slot-scope="scope">
                     <span style="margin-right: 10px;">￥{{ scope.row.price/100 }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="售卖状态">
+            <el-table-column label="服务状态">
                 <template slot-scope="scope">
-                    <span style="margin-right: 10px;">{{ scope.row.status == '0' ? '停售' : '启售' }}</span>
+                    <span style="margin-right: 10px;">{{ scope.row.status == '0' ? '停止' : '开启' }}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -104,7 +104,7 @@
                             class="blueBug"
                             @click="statusHandle(scope.row)"
                     >
-                        {{ scope.row.status == '0' ? '启售' : '停售' }}
+                        {{ scope.row.status == '0' ? '开启' : '停止' }}
                     </el-button>
                     <el-button
                             type="text"
@@ -186,13 +186,13 @@
                     window.parent.menuHandle({
                         id: '4',
                         url: '/backend/page/food/add.html',
-                        name: '添加菜品'
+                        name: '添加项目'
                     }, true)
                 } else {
                     window.parent.menuHandle({
                         id: '4',
                         url: '/backend/page/food/add.html?id=' + st,
-                        name: '修改菜品'
+                        name: '修改项目'
                     }, true)
                 }
             },
@@ -204,7 +204,7 @@
                         return this.$message.error('请选择删除对象')
                     }
                 }
-                this.$confirm('确认删除该菜品, 是否继续?', '确定删除', {
+                this.$confirm('确认删除该项目, 是否继续?', '确定删除', {
                     'confirmButtonText': '确定',
                     'cancelButtonText': '取消',
                 }).then(() => {
@@ -226,7 +226,7 @@
                 let params = {}
                 if (typeof row === 'string') {
                     if (this.checkList.length === 0) {
-                        this.$message.error('批量操作，请先勾选操作菜品！')
+                        this.$message.error('批量操作，请先勾选操作项目！')
                         return false
                     }
                     params.id = this.checkList.join(',')
@@ -236,7 +236,7 @@
                     params.status = row.status ? '0' : '1'
                 }
                 this.dishState = params
-                this.$confirm('确认更改该菜品状态?', '提示', {
+                this.$confirm('确认更改该项目状态?', '提示', {
                     'confirmButtonText': '确定',
                     'cancelButtonText': '取消',
                     'type': 'warning'
@@ -244,7 +244,7 @@
                     // 起售停售---批量起售停售接口
                     dishStatusByStatus(this.dishState).then(res => {
                         if (res.code === 1) {
-                            this.$message.success('菜品状态已经更改成功！')
+                            this.$message.success('项目状态已经更改成功！')
                             this.handleQuery()
                         } else {
                             this.$message.error(res.msg || '操作失败')

@@ -56,7 +56,18 @@ public class CommonController {
         try {
             FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
             ServletOutputStream outputStream = response.getOutputStream();
-            response.setContentType("image/jpeg");
+//            response.setContentType("image/jpeg");
+            // 根据文件名的后缀动态设置内容类型
+            String extension = name.substring(name.lastIndexOf(".") + 1).toLowerCase();
+            if (extension.equals("jpg")) {
+                response.setContentType("image/jpg");
+            } else if (extension.equals("jpeg")) {
+                response.setContentType("image/jpeg");
+            } else if (extension.equals("png")) {
+                response.setContentType("image/png");
+            } else if (extension.equals("gif")) {
+                response.setContentType("image/gif");
+            }
             int len = 0;
             byte[] bytes = new byte[1024];
             while ((len = fileInputStream.read(bytes)) != -1) {
@@ -69,7 +80,5 @@ public class CommonController {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-
     }
 }

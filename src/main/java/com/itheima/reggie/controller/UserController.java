@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,12 +35,12 @@ public class UserController {
         //获取邮箱号
         //相当于发送短信定义的String to
         String email = user.getPhone();
-        String subject = "瑞吉外卖";
+        String subject = "祥瑞健康";
         //StringUtils.isNotEmpty字符串非空判断
         if (StringUtils.isNotEmpty(email)) {
             //发送一个四位数的验证码,把验证码变成String类型
             String code = ValidateCodeUtils.generateValidateCode(4).toString();
-            String text = "【瑞吉外卖】您好，您的登录验证码为：" + code + "，请尽快登录";
+            String text = "【祥瑞健康】您好，您的登录验证码为：" + code + "，请尽快登录";
             log.info("验证码为：" + code);
             //发送短信
             userService.sendMsg(email, subject, text);
@@ -88,5 +89,19 @@ public class UserController {
             return R.success(user);
         }
         return R.error("登录失败");
+    }
+
+    /**
+     * 退出功能
+     * ①在controller中创建对应的处理方法来接受前端的请求，请求方式为post；
+     * ②清理session中的用户id
+     * ③返回结果（前端页面会进行跳转到登录页面）
+     * @return
+     */
+    @PostMapping("/logout")
+    public R<String> logout(HttpServletRequest request){
+        //清理session中的用户id
+        request.getSession().removeAttribute("user");
+        return R.success("退出成功");
     }
 }

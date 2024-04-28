@@ -15,4 +15,5 @@ public interface DishService extends IService<Dish> {
     public void updateWithFlavor(DishDto dishDto);
 
 
+    public void remove(Long ids);
 }

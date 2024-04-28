@@ -22,7 +22,7 @@
                     class="continue"
                     @click="addClass('class')"
             >
-                + 新增菜品分类
+                + 新增项目分类
             </el-button>
             <el-button
                     type="primary"
@@ -46,7 +46,7 @@
                     label="分类类型"
             >
                 <template slot-scope="scope">
-                    <span>{{ scope.row.type == '1' ? '菜品分类': '套餐分类' }}</span>
+                    <span>{{ scope.row.type == '1' ? '项目分类': '套餐分类' }}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -161,7 +161,7 @@
                 tableData: [],
                 type: '',
                 classData: {
-                    'title': '添加菜品分类',
+                    'title': '添加项目分类',
                     'dialogVisible': false,
                     'categoryId': '',
                     'name': '',
@@ -195,7 +195,7 @@
             // 添加
             addClass(st) {
                 if (st == 'class') {
-                    this.classData.title = '新增菜品分类'
+                    this.classData.title = '新增项目分类'
                     this.type = '1'
                 } else {
                     this.classData.title = '新增套餐分类'

@@ -42,6 +42,17 @@ public class DishController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DeleteMapping
+    public R<String> delete(Long ids) {
+        dishService.remove(ids);
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+        return R.success("删除成功");
+    }
+
+
+
     /**
      * 新增菜品
      *
@@ -52,6 +63,9 @@ public class DishController {
     public R<String> save(@RequestBody DishDto dishDto) {
         log.info(dishDto.toString());
         dishService.saveWithFlavor(dishDto);
+        //清理某个分类下的菜品缓存
+        String key="dish_"+dishDto.getCategoryId()+"_1";
+        redisTemplate.delete(key);
         return R.success("新增菜品成功");
     }
 
@@ -136,6 +150,9 @@ public class DishController {
         updateWrapper.set(Dish::getStatus, status).in(Dish::getId, list);
         //调用
         dishService.update(updateWrapper);
+        //清理所有菜品缓存数据
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
         return R.success("修改套餐成功");
     }
 

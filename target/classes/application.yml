@@ -13,6 +13,9 @@ spring:
     host:127.0.0.1
     port:6379
     database:0
+  servlet:
+    multipart:
+      max-file-size: 251658240
   cache:
     redis:
       time-to-live: 1800000 #设置缓存数据过期时间
@@ -21,7 +24,7 @@ spring:
     #发送验证码的邮箱
     username: 1069510355@qq.com
     # 你的QQ邮箱授权码
-    password: shlvicsyuzsubbhb
+    password: nboqjpizdqdbbefh
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
@@ -31,7 +34,8 @@ mybatis-plus:
     db-config:
       id-type: ASSIGN_ID
 
+#reggie:
+#  path: D:\资料\8、黑马程序员瑞吉外卖平台实战开发\transferTo\
 reggie:
-  path: D:\资料\8、黑马程序员瑞吉外卖平台实战开发\transferTo\
-
+  path: D:\Code\reggie\图片\
 
