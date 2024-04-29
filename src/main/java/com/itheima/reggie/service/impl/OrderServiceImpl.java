@@ -46,6 +46,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         }
 
         User user = userService.getById(currentId);
+
         Long addressBookId = orders.getAddressBookId();
         AddressBook addressBook = addressBookService.getById(addressBookId);
 

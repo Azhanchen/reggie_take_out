@@ -6,7 +6,7 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
       password: 123456
   redis:
@@ -37,5 +37,5 @@ mybatis-plus:
 #reggie:
 #  path: D:\资料\8、黑马程序员瑞吉外卖平台实战开发\transferTo\
 reggie:
-  path: D:\Code\reggie\图片\
+  path: D:\Code\reggie\testImg\
 
