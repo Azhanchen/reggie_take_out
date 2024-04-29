@@ -94,3 +94,9 @@
     background: rgba(255, 142, 0, 1);
     color: #333333;
 }
+
+#login .divImg {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
