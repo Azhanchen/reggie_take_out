@@ -6,7 +6,6 @@ const getCategoryPage = (params) => {
         params
     })
 }
-
 // 编辑页面反查详情接口
 const queryCategoryById = (id) => {
     return $axios({

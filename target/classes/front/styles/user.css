@@ -79,12 +79,13 @@
 }
 
 #user .divContent {
-    height: calc(100% - 174rem);
+    height: 200rem;
+    /*height: calc(100% - 200rem);*/
     overflow-y: auto;
 }
 
 #user .divLinks {
-    height: 104rem;
+    height: 160rem;
     opacity: 1;
     background: #ffffff;
     border-radius: 6rem;

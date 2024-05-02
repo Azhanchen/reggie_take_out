@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../../plugins/element-ui/index.css"/>
+    <link rel="stylesheet" href="../../styles/common.css"/>
+    <link rel="stylesheet" href="../../styles/page.css"/>
+</head>
+<body>
+<div class="dashboard-container" id="info-app">
+    <div class="container">
+        <div
+                class="tableBar"
+                style="display: inline-block"
+        >
+            <el-button
+                    type="primary"
+                    class="continue"
+                    @click="addOrEditInfo('add')"
+            >
+                + 发布通知
+            </el-button>
+        </div>
+        <el-table
+                :data="tableData"
+                stripe
+                class="tableBox"
+        >
+            <el-table-column
+                    prop="id"
+                    label="id"
+            />
+            </el-table-column>
+            <el-table-column
+                    prop="title"
+                    label="通知标题"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="content"
+                    label="通知内容"
+            />
+            </el-table-column>
+            <el-table-column
+                    prop="type"
+                    label="通知类型"
+            />
+            </el-table-column>
+            <el-table-column
+                    prop="createTime"
+                    label="发布时间"
+            >
+                <template slot-scope="scope">
+                    {{scope.row.createTime}}
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="updateTime"
+                    label="更新时间"
+            >
+                <template slot-scope="scope">
+                    {{scope.row.updateTime}}
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="sort"
+                    label="排序"
+            />
+            </el-table-column>
+            <el-table-column
+                    prop="createUser"
+                    label="发布者"
+            />
+            </el-table-column>
+            <el-table-column
+                    prop="updateUser"
+                    label="更新者"
+            />
+            </el-table-column>
+            <el-table-column
+                    prop="status"
+                    label="状态"
+            />
+            <template slot-scope="scope">
+                <span style="margin-right: 10px;">{{ scope.row.status == '0' ? '已下架' : '发布中' }}</span>
+            </template>
+            </el-table-column>
+            <el-table-column
+                    label="操作"
+                    width="160"
+                    align="center"
+            >
+                <template slot-scope="scope">
+                    <el-button
+                            type="text"
+                            size="small"
+                            class="blueBug"
+                            @click="addOrEditInfo(scope.row.id)"
+                    >
+                        修改
+                    </el-button>
+                    <el-button
+                            type="text"
+                            size="small"
+                            class="blueBug"
+                            @click="statusHandle(scope.row)"
+                    >
+                        {{ scope.row.status == '0' ? '发布' : '下架' }}
+                    </el-button>
+                    <el-button
+                            type="text"
+                            size="small"
+                            class="delBut non"
+                            @click="deleteHandle(scope.row.id)"
+                    >
+                        删除
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+                class="pageList"
+                :page-sizes="[10, 20, 30, 40]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="counts"
+                @size-change="handleSizeChange"
+                :current-page.sync="page"
+                @current-change="handleCurrentChange"
+        ></el-pagination>
+    </div>
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../api/category.js"></script>
+<script src="../../api/info.js"></script>
+<script>
+    new Vue({
+        el: '#info-app',
+        data() {
+            return {
+                action: '',
+                counts: 0,
+                page: 1,
+                pageSize: 10,
+                type: '',
+                classData: {
+                    'title': '添加项目分类',
+                    'dialogVisible': false,
+                    'categoryId': '',
+                    'name': '',
+                    sort: ''
+                },
+                tableData: [],
+                reveiceTable: [],
+                addInfo: {
+                    'title': '发布通知',
+                    'dialogVisible': false,
+                    'type': '',
+                    'content':'',
+                    'sort':''
+                }
+            }
+        },
+        computed: {},
+        created() {
+            this.init()
+        },
+        mounted() {
+        },
+        methods: {
+            async init() {
+                await getInfo({'page': this.page, 'pageSize': this.pageSize}).then(res => {
+                    if (String(res.code) === '1') {
+                        console.log(res.data)
+                        this.tableData = res.data.records
+                        this.counts = Number(res.data.total)
+                    } else {
+                        this.$message.error(res.msg || '操作失败')
+                    }
+                }).catch(err => {
+                    this.$message.error('请求出错了：' + err)
+                })
+            },
+            statusHandle(row) {
+                let params = {}
+                params.ids = row.id
+                params.status = row.status ? '0' : '1'
+                this.$confirm('确认更改该通知状态?', '提示', {
+                    'confirmButtonText': '确定',
+                    'cancelButtonText': '取消',
+                    'type': 'warning'
+                }).then(() => {
+                    // 起售停售---批量起售停售接口
+                    InfoStatusByStatus(params).then(res => {
+                        if (res.code === 1) {
+                            this.$message.success('套餐状态已经更改成功！')
+                            this.handleQuery()
+                        } else {
+                            this.$message.error(res.msg || '操作失败')
+                        }
+                    }).catch(err => {
+                        this.$message.error('请求出错了：' + err)
+                    })
+                })
+            },
+            addOrEditInfo(st) {
+                if (st === 'add') {
+                    window.parent.menuHandle({
+                        id: '6',
+                        url: '/backend/page/info/add.html',
+                        name: '发布通知'
+                    }, true)
+                } else {
+                    window.parent.menuHandle({
+                        id: '6',
+                        url: '/backend/page/info/add.html?id=' + st,
+                        name: '修改通知'
+                    }, true)
+                }
+            },
+            openAddDish() {
+                this.seachKey = ''
+                this.dialogVisible = true
+                //搜索条件清空，菜品重新查询，菜品类别选第一个重新查询
+                this.value = ''
+                this.keyInd = 0
+                this.getDishList(this.dishType[0].id)
+            },
+            handleQuery() {
+                this.page = 1;
+                this.init();
+            },
+            // 添加
+            addClass() {
+                this.addInfo.title = '发布通知'
+                this.action = 'add'
+                this.addInfo.name = ''
+                this.addInfo.sort = ''
+                this.addInfo.dialogVisible = true
+            },
+            editHandle(dat) {
+                this.addInfo.title = '修改通知'
+                this.action = 'edit'
+                this.addInfo.name = dat.name
+                this.addInfo.sort = dat.sort
+                this.addInfo.content = dat.content
+                this.classData.dialogVisible = true
+            },
+            // 关闭弹窗
+            handleClose(st) {
+                this.classData.dialogVisible = false
+            },
+            //删除
+            deleteHandle(id) {
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                    'confirmButtonText': '确定',
+                    'cancelButtonText': '取消',
+                    'type': 'warning'
+                }).then(() => {
+                    deleteInfo(id).then(res => {
+                        if (res.code === 1) {
+                            this.$message.success('删除成功！')
+                            this.handleQuery()
+                        } else {
+                            this.$message.error(res.msg || '操作失败')
+                        }
+                    }).catch(err => {
+                        this.$message.error('请求出错了：' + err)
+                    })
+                })
+            },
+            //数据提交
+            submitForm(st) {
+                const classData = this.classData
+                const valid = (classData.name === 0 || classData.name) && (classData.sort === 0 || classData.sort)
+                if (this.action === 'add') {
+                    if (valid) {
+                        const reg = /^\d+$/
+                        if (reg.test(classData.sort)) {
+                            addCategory({'name': classData.name, 'type': this.type, sort: classData.sort}).then(res => {
+                                console.log(res)
+                                if (res.code === 1) {
+                                    this.$message.success('分类添加成功！')
+                                    if (!st) {
+                                        this.classData.dialogVisible = false
+                                    } else {
+                                        this.classData.name = ''
+                                        this.classData.sort = ''
+                                    }
+                                    this.handleQuery()
+                                } else {
+                                    this.$message.error(res.msg || '操作失败')
+                                }
+                            }).catch(err => {
+                                this.$message.error('请求出错了：' + err)
+                            })
+                        } else {
+                            this.$message.error('排序只能输入数字类型')
+                        }
+
+                    } else {
+                        this.$message.error('请输入分类名称或排序')
+                    }
+                } else if (valid) {
+                    const reg = /^\d+$/
+                    if (reg.test(this.classData.sort)) {
+                        editCategory({
+                            'id': this.classData.id,
+                            'name': this.classData.name,
+                            sort: this.classData.sort
+                        }).then(res => {
+                            if (res.code === 1) {
+                                this.$message.success('分类修改成功！')
+                                this.classData.dialogVisible = false
+                                this.handleQuery()
+                            } else {
+                                this.$message.error(res.msg || '操作失败')
+                            }
+                        }).catch(err => {
+                            this.$message.error('请求出错了：' + err)
+                        })
+                    } else {
+                        this.$message.error('排序只能输入数字类型')
+                    }
+                } else {
+                    this.$message.error('请输入分类名称或排序')
+                }
+            },
+            handleSizeChange(val) {
+                this.pageSize = val
+                this.init()
+            },
+            handleCurrentChange(val) {
+                this.page = val
+                this.init()
+            }
+        }
+    })
+</script>
+</body>
+</html>

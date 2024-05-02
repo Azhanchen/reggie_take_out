@@ -411,7 +411,6 @@
                 seachKey: '',
                 dishList: [],
                 imageUrl: '',
-                actionType: '',
                 dishTable: [],
                 dialogVisible: false,
                 checkList: [],
@@ -493,73 +492,6 @@
         mounted() {
         },
         methods: {
-            async init() {
-                querySetmealById(this.id).then((res) => {
-                    if (String(res.code) === '1') {
-                        this.ruleForm = res.data
-                        this.ruleForm.status = res.data.status === '1'
-                        this.ruleForm.price = res.data.price / 100
-                        this.imageUrl = `/common/download?name=${res.data.image}`
-                        this.checkList = res.data.setmealDishes
-                        this.dishTable = res.data.setmealDishes
-                        this.ruleForm.idType = res.data.categoryId
-                        // this.ruleForm.password = ''
-                    } else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
-            },
-            seachHandle() {
-                this.seachKey = this.value
-            },
-            // 获取套餐分类
-            getDishTypeList() {
-                getCategoryList({type: 2, page: 1, pageSize: 1000}).then((res) => {
-                    if (res.code === 1) {
-                        this.setMealList = res.data.map((obj) => ({...obj, idType: obj.id}))
-                    } else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
-            },
-            // 删除套餐菜品
-            delDishHandle(index) {
-                this.dishTable.splice(index, 1)
-                this.checkList.splice(index, 1)
-            },
-
-            // 获取添加菜品数据
-            getCheckList(value) {
-                this.checkList = [...value]
-            },
-
-            // 添加菜品
-            openAddDish() {
-                this.seachKey = ''
-                this.dialogVisible = true
-                //搜索条件清空，菜品重新查询，菜品类别选第一个重新查询
-                this.value = ''
-                this.keyInd = 0
-                this.getDishList(this.dishType[0].id)
-            },
-            // 取消添加菜品
-            handleClose(done) {
-                // this.$refs.adddish.close()
-                this.dialogVisible = false
-                // this.checkList = JSON.parse(JSON.stringify(this.dishTable))
-                // this.dialogVisible = false
-            },
-
-            // 保存添加菜品列表
-            addTableList() {
-                this.dishTable = JSON.parse(JSON.stringify(this.checkList))
-                this.dishTable.forEach((n) => {
-                    n.copies = 1
-                })
-                this.dialogVisible = false
-                // 添加处理逻辑清空选中list
-                this.checkList = []
-            },
             submitForm(formName, st) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -634,6 +566,73 @@
                         return false
                     }
                 })
+            },
+            async init() {
+                querySetmealById(this.id).then((res) => {
+                    if (String(res.code) === '1') {
+                        this.ruleForm = res.data
+                        this.ruleForm.status = res.data.status === '1'
+                        this.ruleForm.price = res.data.price / 100
+                        this.imageUrl = `/common/download?name=${res.data.image}`
+                        this.checkList = res.data.setmealDishes
+                        this.dishTable = res.data.setmealDishes
+                        this.ruleForm.idType = res.data.categoryId
+                        // this.ruleForm.password = ''
+                    } else {
+                        this.$message.error(res.msg || '操作失败')
+                    }
+                })
+            },
+            seachHandle() {
+                this.seachKey = this.value
+            },
+            // 获取套餐分类
+            getDishTypeList() {
+                getCategoryList({type: 2, page: 1, pageSize: 1000}).then((res) => {
+                    if (res.code === 1) {
+                        this.setMealList = res.data.map((obj) => ({...obj, idType: obj.id}))
+                    } else {
+                        this.$message.error(res.msg || '操作失败')
+                    }
+                })
+            },
+            // 删除套餐菜品
+            delDishHandle(index) {
+                this.dishTable.splice(index, 1)
+                this.checkList.splice(index, 1)
+            },
+
+            // 获取添加菜品数据
+            getCheckList(value) {
+                this.checkList = [...value]
+            },
+
+            // 添加菜品
+            openAddDish() {
+                this.seachKey = ''
+                this.dialogVisible = true
+                //搜索条件清空，菜品重新查询，菜品类别选第一个重新查询
+                this.value = ''
+                this.keyInd = 0
+                this.getDishList(this.dishType[0].id)
+            },
+            // 取消添加菜品
+            handleClose(done) {
+                // this.$refs.adddish.close()
+                this.dialogVisible = false
+                // this.checkList = JSON.parse(JSON.stringify(this.dishTable))
+                // this.dialogVisible = false
+            },
+
+            // 保存添加菜品列表
+            addTableList() {
+                this.dishTable = JSON.parse(JSON.stringify(this.checkList))
+                this.dishTable.forEach((n) => {
+                    n.copies = 1
+                })
+                this.dialogVisible = false
+                // 添加处理逻辑清空选中list
+                this.checkList = []
             },
             handleAvatarSuccess(response, file, fileList) {
                 // this.imageUrl = response.data

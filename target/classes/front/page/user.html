@@ -43,6 +43,12 @@
                 <span>历史订单</span>
                 <i class="el-icon-arrow-right"></i>
             </div>
+            <div class="divSplit"></div>
+            <div class="item" @click="toOrderPage">
+                <img src="./../images/info.png"/>
+                <span>系统通知</span>
+                <i class="el-icon-arrow-right"></i>
+            </div>
         </div>
         <div class="divOrders" v-if="order[0]">
             <div class="title">最新订单</div>
@@ -124,6 +130,11 @@
             toOrderPage() {
                 window.requestAnimationFrame(() => {
                     window.location.href = '/front/page/order.html'
+                })
+            },
+            toInfoPage() {
+                window.requestAnimationFrame(() => {
+                    window.location.href = '/front/page/info.html'
                 })
             },
             initData() {
