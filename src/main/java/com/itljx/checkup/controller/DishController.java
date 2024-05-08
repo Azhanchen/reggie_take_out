@@ -127,10 +127,6 @@ public class DishController {
     public R<String> update(@RequestBody DishDto dishDto) {
         log.info(dishDto.toString());
         dishService.updateWithFlavor(dishDto);
-        //清理所有菜品缓存数据
-//        Set keys = redisTemplate.keys("dish_*");
-//        redisTemplate.delete(keys);
-
         //清理某个分类下的菜品缓存
         String key="dish_"+dishDto.getCategoryId()+"_1";
         redisTemplate.delete(key);

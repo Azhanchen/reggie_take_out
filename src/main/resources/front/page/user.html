@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-    <title>祥瑞体检</title>
+    <title>龙江医院体检</title>
     <link rel="icon" href="./../images/favico.ico">
     <!--element-ui的样式-->
     <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
@@ -25,7 +25,7 @@
         <div class="divUser">
             <img src="./../images/headPage.png"/>
             <div class="desc">
-                <div class="divName">林之迷 <img src="./../images/women.png"/></div>
+                <div class="divName">手机用户: <img src="./../images/women.png"/></div>
                 <div class="divPhone">{{userPhone}}</div>
             </div>
         </div>
@@ -35,18 +35,21 @@
             <div class="item" @click="toAddressPage">
                 <img src="./../images/locations.png"/>
                 <span>地址管理</span>
+                <h1 style="font-size: 10px;margin-left: 120px">地址管理</h1>
                 <i class="el-icon-arrow-right"></i>
             </div>
             <div class="divSplit"></div>
             <div class="item" @click="toOrderPage">
                 <img src="./../images/orders.png"/>
                 <span>历史订单</span>
+                <h1 style="font-size: 10px;margin-left: 120px">历史订单</h1>
                 <i class="el-icon-arrow-right"></i>
             </div>
             <div class="divSplit"></div>
-            <div class="item" @click="toOrderPage">
+            <div class="item" @click="toInfoPage">
                 <img src="./../images/info.png"/>
                 <span>系统通知</span>
+                <h1 style="font-size: 10px;margin-left: 120px">系统通知</h1>
                 <i class="el-icon-arrow-right"></i>
             </div>
         </div>
@@ -109,6 +112,14 @@
                     amount: undefined,//实收金额
                     sumNum: 0,//菜品总数
                 }],
+                info:[{
+                    userId:'',
+                    infoId:'',
+                    isRead: undefined,//1未读，2已读
+                    updateTime:'',//最后更新时间
+                    status: undefined,//1未读，2已读
+                    createUser:'',
+                }]
             }
         },
         computed: {},

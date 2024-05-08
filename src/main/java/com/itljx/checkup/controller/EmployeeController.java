@@ -124,6 +124,8 @@ public class EmployeeController {
 //        employee.setUpdateTime(LocalDateTime.now());
         long id = Thread.currentThread().getId();
         log.info("线程id为：{}", id);
+        String password = employee.getPassword();
+        employee.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
         employeeService.updateById(employee);
         return R.success("员工信息修改成功");
     }

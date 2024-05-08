@@ -24,6 +24,9 @@
             <el-form-item label="账号:" prop="username">
                 <el-input v-model="ruleForm.username" placeholder="请输入账号" maxlength="20"/>
             </el-form-item>
+            <el-form-item label="密码:" prop="password">
+                <el-input v-model="ruleForm.password" placeholder="请输入密码" maxlength="20"/>
+            </el-form-item>
             <el-form-item
                     label="员工姓名:"
                     prop="name"
@@ -110,7 +113,8 @@
                     'phone': '',
                     'sex': '男',
                     'idNumber': '',
-                    username: ''
+                    username: '',
+                    password: '',
                 }
             }
         },

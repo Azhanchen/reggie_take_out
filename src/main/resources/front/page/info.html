@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-    <title>祥瑞体检通知</title>
+    <title>龙江医院体检通知</title>
     <link rel="icon" href="./../images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./../js/base.js"></script>
@@ -17,46 +17,38 @@
     <link rel="stylesheet" href="../styles/vant.min.css"/>
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/order.css"/>
+    <link rel="stylesheet" href="./../styles/info.css"/>
 </head>
 <body>
-<div id="order" class="app">
+<div id="info" class="app">
     <div class="divHead">
         <div class="divTitle">
-            <i class="el-icon-arrow-left" @click="goBack"></i>祥瑞体检通知
+            <i class="el-icon-arrow-left" @click="goBack"></i>龙江医院体检通知
         </div>
     </div>
-    <div class="divBody" v-if="orderList.length > 0">
-        <van-list
-                v-model="loading"
-                :finished="finished"
-                finished-text="没有更多了"
-                @load="getList"
-        >
-            <van-cell v-for="(order,index) in orderList" :key="index" class="item">
-                <div class="timeStatus">
-                    <span>{{order.orderTime}}</span>
-                    <span>{{getStatus(order.status)}}</span>
-                    <!-- <span>正在派送</span> -->
-                </div>
-                <div class="dishList">
-                    <div v-for="(item,index) in order.orderDetails" :key="index" class="item">
-                        <span>{{item.name}}</span>
-                        <span>x{{item.number}}</span>
+    <div class="notification">
+        <div v-if="infoList.length > 0">
+            <div class="notification-list">
+                <div v-for="(info,index) in infoList" :key="index" class="notification-item">
+                    <div class="notification-header">
+                        <span class="update-time">{{ info.updateTime }}</span>
+                        <span class="status">{{ getIsRead(info.isRead) }}</span>
+                    </div>
+                    <div class="notification-content">
+                        <div class="title">{{ info.title }}</div>
+                        <div class="content">{{ info.content }}</div>
+                    </div>
+                    <div class="notification-footer" v-if="info.isRead === '0'">
+                        <button class="confirm-button" @click="updateIsRead(info)">确认已读</button>
                     </div>
                 </div>
-                <div class="result">
-                    <span>共{{order.sumNum}} 件商品,实付</span><span class="price">￥{{order.amount}}</span>
-                </div>
-                <div class="btn" v-if="order.status === 4">
-                    <div class="btnAgain" @click="addOrderAgain(order)">再来一单</div>
-                </div>
-            </van-cell>
-        </van-list>
-    </div>
-    <div class="divNoData" v-else>
-        <div class="divContainer">
-            <img src="./../images/no_order.png"/>
-            <div>暂无订单</div>
+            </div>
+        </div>
+        <div v-else class="no-notification">
+            <div class="no-notification-container">
+                <img src="./../images/no_info.png" alt="No Info"/>
+                <div>暂无通知</div>
+            </div>
         </div>
     </div>
 </div>
@@ -70,9 +62,11 @@
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
 <script src="./../api/order.js"></script>
+<script src="./../api/info.js"></script>
+
 <script>
     new Vue({
-        el: "#order",
+        el: "#info",
         data() {
             return {
                 paging: {
@@ -80,6 +74,7 @@
                     pageSize: 5
                 },
                 orderList: [],
+                infoList: [],
                 loading: false,
                 finished: false
             }
@@ -92,80 +87,141 @@
         },
         methods: {
             goBack() {
-                const url = document.referrer
-                //表示是从订单页面跳转过来的
-                if (url.includes('success')) {
-                    window.requestAnimationFrame(() => {
-                        window.location.href = '/front/index.html'
-                    })
-                } else {
-                    history.go(-1)
-                }
+                history.go(-1)
             },
             initData() {
-                this.getList()
+                this.getInfoList()
             },
-            async getList() {
+            async getInfoList() {
                 if (this.finished) {
                     this.loading = false;
                     return
                 }
-                const res = await orderPagingApi(this.paging)
+                const res = await infoPagingApi()
                 if (res.code === 1) {
-                    this.orderList.push(...res.data.records)
-                    let records = res.data.records
-                    if (records && Array.isArray(records)) {
-                        records.forEach(item => {
-                            let number = 0
-                            item.orderDetails.forEach(ele => {
-                                number += ele.number
-                            })
-                            item.sumNum = number
-                        })
+                    this.infoList.push(...res.data)
+                    console.log(this.infoList)
+                    for (const info of this.infoList) {
+                        console.log(info.isRead);
                     }
-                    this.loading = false;
-                    if (this.paging.page >= res.data.pages) {
-                        this.finished = true;
-                    }
-                    this.paging.page = this.paging.page + 1
                 } else {
                     this.$notify({type: 'warning', message: res.msg});
                 }
             },
-            async addOrderAgain(order) {
-                const res = await orderAgainApi({id: order.id})
+            async updateIsRead(info) {
+                const res = await updateIsReadApi({infoId: info.infoId})
                 if (res.code === 1) {
                     window.requestAnimationFrame(() => {
-                        window.location.href = '/front/index.html'
+                        window.location.href = '/front/page/info.html'
                     })
                 } else {
                     this.$notify({type: 'warning', message: res.msg});
                 }
             },
-            getStatus(status) {
+            getIsRead(isRead) {
+                console.log('isRead:' + isRead)
                 let str = ''
-                switch (status) {
-                    case 1:
-                        str = '待付款'
+                switch (isRead) {
+                    case '0':
+                        str = '未读';
                         break;
-                    case 2:
-                        str = '正在出单'
+                    case '1':
+                        str = '已读';
                         break;
-                    case 3:
-                        str = '已出单'
-                        break;
-                    case 4:
-                        str = '已完成'
-                        break;
-                    case 5:
-                        str = '已取消'
-                        break;
-
                 }
                 return str
             }
         }
     })
 </script>
+<style>
+    .notification {
+        width: 100%;
+    }
+
+    .notification-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .notification-item {
+        padding: 16px;
+        border: 1px solid #ccc;
+        margin-bottom: 16px;
+        background-color: #f7f7f7;
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .update-time {
+        font-size: 12px;
+        color: #888;
+    }
+
+    .status {
+        font-size: 14px;
+        color: #333;
+    }
+
+    .notification-content {
+        margin-bottom: 8px;
+    }
+
+    .title {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .content {
+        font-size: 14px;
+        height: 60px;
+        color: #555;
+    }
+
+    .notification-footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .confirm-button {
+        padding: 8px 16px;
+        background-color: #2196f3;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .no-notification {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+    }
+
+    .no-notification-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .no-notification-container img {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 16px;
+    }
+
+    .no-notification-container div {
+        font-size: 16px;
+        color: #888;
+    }
+</style>
 </body>
 </html>

@@ -79,8 +79,8 @@
 }
 
 #user .divContent {
-    height: 200rem;
-    /*height: calc(100% - 200rem);*/
+    /*height: 200rem;*/
+    height: calc(100% - 200rem);
     overflow-y: auto;
 }
 

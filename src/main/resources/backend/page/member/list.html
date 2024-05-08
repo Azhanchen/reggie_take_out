@@ -75,6 +75,7 @@
                             class="blueBug"
                             @click="addMemberHandle(scope.row.id)"
                             :class="{notAdmin:user !== 'admin'}"
+                            v-if="user === 'admin' || user === scope.row.username"
                     >
                         编辑
                     </el-button>

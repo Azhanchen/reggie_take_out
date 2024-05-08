@@ -11,5 +11,4 @@ public class UserInfo implements Serializable {
   private Long userId;
   private Long infoId;
   private Long isRead;
-
 }

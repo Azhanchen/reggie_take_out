@@ -38,14 +38,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         Long currentId = BaseContext.getCurrentId();
         //查询当前用户的购物车数据
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId, currentId);
+        queryWrapper.eq(currentId!=null,ShoppingCart::getUserId, currentId);
         List<ShoppingCart> shoppingCartList = shoppingCartService.list(queryWrapper);
 
-        if (shoppingCartList == null || shoppingCartList.size() == 0) {
+//        if (shoppingCartList == null || shoppingCartList.size() == 0) {
+        if (shoppingCartList.isEmpty()) {
             throw new CustomException("购物车无数据");
         }
 
-        User user = userService.getById(currentId);
 
         Long addressBookId = orders.getAddressBookId();
         AddressBook addressBook = addressBookService.getById(addressBookId);
@@ -53,6 +53,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         if (addressBook == null) {
             throw new CustomException("地址信息有误，不能下单");
         }
+        User user = userService.getById(currentId);
 
         //向订单表插入数据，一条数据
         AtomicInteger amount = new AtomicInteger(0);
