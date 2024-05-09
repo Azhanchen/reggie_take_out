@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * 套餐菜品关系
  */
 @Data
-public class SetmealDish implements Serializable {
+public class SetmealExamination implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,7 +24,7 @@ public class SetmealDish implements Serializable {
 
 
     //菜品id
-    private Long dishId;
+    private Long examinationId;
 
 
     //菜品名称 （冗余字段）

@@ -23,7 +23,7 @@ public class OrderDetail implements Serializable {
 
 
     //菜品id
-    private Long dishId;
+    private Long examinationId;
 
 
     //套餐id
@@ -31,7 +31,7 @@ public class OrderDetail implements Serializable {
 
 
     //口味
-    private String dishFlavor;
+    private String examinationFlavor;
 
 
     //数量

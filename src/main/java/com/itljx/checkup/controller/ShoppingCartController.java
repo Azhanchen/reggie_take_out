@@ -29,10 +29,10 @@ public class ShoppingCartController {
         //查询当前选择菜品或者套餐是否已经在购物车中
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId, shoppingCart.getUserId());
-        Long dishId = shoppingCart.getDishId();
-        if (dishId != null) {
+        Long examinationId = shoppingCart.getExaminationId();
+        if (examinationId != null) {
             //菜品
-            queryWrapper.eq(ShoppingCart::getDishId, shoppingCart.getDishId());
+            queryWrapper.eq(ShoppingCart::getExaminationId, shoppingCart.getExaminationId());
         } else {
             //套餐
             queryWrapper.eq(ShoppingCart::getSetmealId, shoppingCart.getSetmealId());
@@ -61,9 +61,9 @@ public class ShoppingCartController {
         Long currentId = BaseContext.getCurrentId();
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId, currentId);
-        Long dishId = shoppingCart.getDishId();
+        Long dishId = shoppingCart.getExaminationId();
         if (dishId != null) {
-            queryWrapper.eq(ShoppingCart::getDishId, shoppingCart.getDishId());
+            queryWrapper.eq(ShoppingCart::getExaminationId, shoppingCart.getExaminationId());
         } else {
             queryWrapper.eq(ShoppingCart::getSetmealId, shoppingCart.getSetmealId());
         }

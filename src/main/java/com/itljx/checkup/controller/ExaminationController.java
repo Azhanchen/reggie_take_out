@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itljx.checkup.common.R;
-import com.itljx.checkup.dto.DishDto;
+import com.itljx.checkup.dto.ExaminationDto;
 import com.itljx.checkup.entity.Category;
-import com.itljx.checkup.entity.Dish;
-import com.itljx.checkup.entity.DishFlavor;
+import com.itljx.checkup.entity.Examination;
+import com.itljx.checkup.entity.ExaminationFlavor;
 import com.itljx.checkup.service.CategoryService;
-import com.itljx.checkup.service.DishFlavorService;
-import com.itljx.checkup.service.DishService;
+import com.itljx.checkup.service.ExaminationFlavorService;
+import com.itljx.checkup.service.ExaminationService;
 import com.itljx.checkup.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dish")
 @Slf4j
-public class DishController {
+public class ExaminationController {
     @Autowired
-    private DishService dishService;
+    private ExaminationService examinationService;
     @Autowired
-    private DishFlavorService dishFlavorService;
+    private ExaminationFlavorService examinationFlavorService;
     @Autowired
     private SetmealService setmealService;
     @Autowired
@@ -45,7 +45,7 @@ public class DishController {
 
     @DeleteMapping
     public R<String> delete(Long ids) {
-        dishService.remove(ids);
+        examinationService.remove(ids);
         Set keys = redisTemplate.keys("dish_*");
         redisTemplate.delete(keys);
         return R.success("删除成功");
@@ -60,9 +60,9 @@ public class DishController {
      * @return
      */
     @PostMapping
-    public R<String> save(@RequestBody DishDto dishDto) {
+    public R<String> save(@RequestBody ExaminationDto dishDto) {
         log.info(dishDto.toString());
-        dishService.saveWithFlavor(dishDto);
+        examinationService.saveWithFlavor(dishDto);
         //清理某个分类下的菜品缓存
         String key="dish_"+dishDto.getCategoryId()+"_1";
         redisTemplate.delete(key);
@@ -80,23 +80,23 @@ public class DishController {
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String name) {
         //构造分页构造器
-        Page<Dish> pageInfo = new Page<>(page, pageSize);
-        Page<DishDto> dishDtoPage = new Page<>();
+        Page<Examination> pageInfo = new Page<>(page, pageSize);
+        Page<ExaminationDto> dishDtoPage = new Page<>();
 
         //条件构造器
-        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<Examination> queryWrapper = new LambdaQueryWrapper<>();
         //添加过滤条件
-        queryWrapper.like(name != null, Dish::getName, name);
+        queryWrapper.like(name != null, Examination::getName, name);
         //添加排序条件
-        queryWrapper.orderByDesc(Dish::getUpdateTime);
+        queryWrapper.orderByDesc(Examination::getUpdateTime);
         //执行分页查询
-        dishService.page(pageInfo, queryWrapper);
+        examinationService.page(pageInfo, queryWrapper);
 
         //对象拷贝
         BeanUtils.copyProperties(pageInfo, dishDtoPage, "records");
-        List<Dish> records = pageInfo.getRecords();
-        List<DishDto> list = records.stream().map((item) -> {
-            DishDto dishDto = new DishDto();
+        List<Examination> records = pageInfo.getRecords();
+        List<ExaminationDto> list = records.stream().map((item) -> {
+            ExaminationDto dishDto = new ExaminationDto();
             BeanUtils.copyProperties(item, dishDto);
             Long categoryId = item.getCategoryId();//分类id
             Category category = categoryService.getById(categoryId);
@@ -115,8 +115,8 @@ public class DishController {
      * @return
      */
     @GetMapping("/{id}")
-    public R<DishDto> get(@PathVariable Long id) {
-        DishDto dishDto = dishService.getByIdWithFlavor(id);
+    public R<ExaminationDto> get(@PathVariable Long id) {
+        ExaminationDto dishDto = examinationService.getByIdWithFlavor(id);
         return R.success(dishDto);
     }
 
@@ -124,9 +124,9 @@ public class DishController {
      * 修改菜品
      */
     @PutMapping
-    public R<String> update(@RequestBody DishDto dishDto) {
+    public R<String> update(@RequestBody ExaminationDto dishDto) {
         log.info(dishDto.toString());
-        dishService.updateWithFlavor(dishDto);
+        examinationService.updateWithFlavor(dishDto);
         //清理某个分类下的菜品缓存
         String key="dish_"+dishDto.getCategoryId()+"_1";
         redisTemplate.delete(key);
@@ -141,11 +141,11 @@ public class DishController {
     public R<String> updateStatus(@PathVariable Integer status, Long[] ids) {
         List<Long> list = Arrays.asList(ids);
         //构建条件构造器
-        LambdaUpdateWrapper<Dish> updateWrapper = new LambdaUpdateWrapper<>();
+        LambdaUpdateWrapper<Examination> updateWrapper = new LambdaUpdateWrapper<>();
         //添加过滤器
-        updateWrapper.set(Dish::getStatus, status).in(Dish::getId, list);
+        updateWrapper.set(Examination::getStatus, status).in(Examination::getId, list);
         //调用
-        dishService.update(updateWrapper);
+        examinationService.update(updateWrapper);
         //清理所有菜品缓存数据
         Set keys = redisTemplate.keys("dish_*");
         redisTemplate.delete(keys);
@@ -155,15 +155,15 @@ public class DishController {
     /**
      * 根据条件查询相应的菜品数据
      *
-     * @param dish
+     * @param examination
      * @return
      */
     @GetMapping("/list")
-    public R<List<DishDto>> list(Dish dish) {
-        List<DishDto> dishDtoList=null;
-        String key="dish_"+dish.getCategoryId()+"_"+dish.getStatus();
+    public R<List<ExaminationDto>> list(Examination examination) {
+        List<ExaminationDto> dishDtoList=null;
+        String key="dish_"+ examination.getCategoryId()+"_"+ examination.getStatus();
         //先从redis中获取缓存数据
-        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+        dishDtoList = (List<ExaminationDto>) redisTemplate.opsForValue().get(key);
 
         //如果存在，直接返回，无需查询数据库
         if(dishDtoList!=null){
@@ -171,14 +171,14 @@ public class DishController {
             return R.success(dishDtoList);
         }
         //构建查询条件
-        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
-        queryWrapper.eq(Dish::getStatus, 1);
+        LambdaQueryWrapper<Examination> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(examination.getCategoryId() != null, Examination::getCategoryId, examination.getCategoryId());
+        queryWrapper.eq(Examination::getStatus, 1);
         //添加排序条件
-        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
-        List<Dish> list = dishService.list(queryWrapper);
+        queryWrapper.orderByAsc(Examination::getSort).orderByDesc(Examination::getUpdateTime);
+        List<Examination> list = examinationService.list(queryWrapper);
         dishDtoList = list.stream().map((item) -> {
-            DishDto dishDto = new DishDto();
+            ExaminationDto dishDto = new ExaminationDto();
             BeanUtils.copyProperties(item, dishDto);
             Long categoryId = item.getCategoryId();//分类id
             Category category = categoryService.getById(categoryId);
@@ -187,10 +187,10 @@ public class DishController {
                 dishDto.setCategoryName(categoryName);
             }
             Long dishId = item.getId();//当前菜品id
-            LambdaQueryWrapper<DishFlavor> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(DishFlavor::getDishId, dishId);
-            List<DishFlavor> dishFlavorList = dishFlavorService.list(lambdaQueryWrapper);
-            dishDto.setFlavors(dishFlavorList);
+            LambdaQueryWrapper<ExaminationFlavor> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(ExaminationFlavor::getExaminationId, dishId);
+            List<ExaminationFlavor> examinationFlavorList = examinationFlavorService.list(lambdaQueryWrapper);
+            dishDto.setFlavors(examinationFlavorList);
             return dishDto;
         }).collect(Collectors.toList());
         //如果不存在，需要查询数据库，将查询到的菜品缓存到Redis

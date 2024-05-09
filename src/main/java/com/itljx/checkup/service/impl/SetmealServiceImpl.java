@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itljx.checkup.common.CustomException;
 import com.itljx.checkup.dto.SetmealDto;
 import com.itljx.checkup.entity.Setmeal;
-import com.itljx.checkup.entity.SetmealDish;
+import com.itljx.checkup.entity.SetmealExamination;
 import com.itljx.checkup.mapper.SetmealMapper;
-import com.itljx.checkup.service.SetmealDishService;
+import com.itljx.checkup.service.SetmealExaminationService;
 import com.itljx.checkup.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +20,17 @@ import java.util.stream.Collectors;
 @Service
 public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> implements SetmealService {
     @Autowired
-    private SetmealDishService setmealDishService;
+    private SetmealExaminationService setmealExaminationService;
 
     @Transactional
     public void saveWithDish(SetmealDto setmealDto) {
         this.save(setmealDto);
-        List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
-        setmealDishes.stream().map((item) -> {
+        List<SetmealExamination> setmealExaminations = setmealDto.getSetmealExaminations();
+        setmealExaminations.stream().map((item) -> {
             item.setSetmealId(setmealDto.getId());
             return item;
         }).collect(Collectors.toList());
-        setmealDishService.saveBatch(setmealDishes);
+        setmealExaminationService.saveBatch(setmealExaminations);
     }
 
     @Transactional
@@ -45,9 +45,9 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         //先删除套餐表中数据
         this.removeByIds(ids);
         //删除关联表数据
-        LambdaQueryWrapper<SetmealDish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.in(SetmealDish::getSetmealId, ids);
-        setmealDishService.remove(lambdaQueryWrapper);
+        LambdaQueryWrapper<SetmealExamination> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(SetmealExamination::getSetmealId, ids);
+        setmealExaminationService.remove(lambdaQueryWrapper);
     }
 
     /**
@@ -58,14 +58,14 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public SetmealDto getDate(Long id) {
         Setmeal setmeal = this.getById(id);
         SetmealDto setmealDto = new SetmealDto();
-        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<SetmealExamination> queryWrapper = new LambdaQueryWrapper();
         //在关联表中查询，setmealdish
-        queryWrapper.eq(id!=null,SetmealDish::getSetmealId,id);
+        queryWrapper.eq(id!=null, SetmealExamination::getSetmealId,id);
 
         if (setmeal != null){
             BeanUtils.copyProperties(setmeal,setmealDto);
-            List<SetmealDish> list = setmealDishService.list(queryWrapper);
-            setmealDto.setSetmealDishes(list);
+            List<SetmealExamination> list = setmealExaminationService.list(queryWrapper);
+            setmealDto.setSetmealExaminations(list);
             return setmealDto;
         }
         return null;

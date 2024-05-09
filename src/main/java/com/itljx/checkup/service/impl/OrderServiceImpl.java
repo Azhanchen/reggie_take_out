@@ -64,8 +64,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(orderId);
             orderDetail.setNumber(item.getNumber());
-            orderDetail.setDishFlavor(item.getDishFlavor());
-            orderDetail.setDishId(item.getDishId());
+            orderDetail.setExaminationFlavor(item.getExaminationFlavor());
+            orderDetail.setExaminationId(item.getExaminationId());
             orderDetail.setSetmealId(item.getSetmealId());
             orderDetail.setName(item.getName());
             orderDetail.setImage(item.getImage());
@@ -84,10 +84,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         orders.setUserName(user.getName());
         orders.setConsignee(addressBook.getConsignee());
         orders.setPhone(addressBook.getPhone());
-        orders.setAddress((addressBook.getProvinceName() == null ? "" : addressBook.getProvinceName())
-                + (addressBook.getCityName() == null ? "" : addressBook.getCityName())
-                + (addressBook.getDistrictName() == null ? "" : addressBook.getDistrictName())
-                + (addressBook.getDetail() == null ? "" : addressBook.getDetail()));//地址详细信息
+//        orders.setAddress((addressBook.getProvinceName() == null ? "" : addressBook.getProvinceName())
+//                + (addressBook.getCityName() == null ? "" : addressBook.getCityName())
+//                + (addressBook.getDistrictName() == null ? "" : addressBook.getDistrictName())
+//                + (addressBook.getDetail() == null ? "" : addressBook.getDetail()));//地址详细信息
+        orders.setAddress((addressBook.getDetail() == null ? "" : addressBook.getDetail()));//地址详细信息
         this.save(orders);
         //向订单明细表插入数据，可能多条
         orderDetailService.saveBatch(orderDetails);

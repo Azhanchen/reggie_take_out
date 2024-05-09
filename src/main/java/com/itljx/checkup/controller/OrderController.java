@@ -82,17 +82,17 @@ public class OrderController {
             ShoppingCart shoppingCart = new ShoppingCart();
             shoppingCart.setUserId(userId);
             shoppingCart.setImage(item.getImage());
-            Long dishId = item.getDishId();
+            Long dishId = item.getExaminationId();
             Long setmealId = item.getSetmealId();
             if (dishId != null) {
                 //如果是菜品那就添加菜品的查询条件
-                shoppingCart.setDishId(dishId);
+                shoppingCart.setExaminationId(dishId);
             } else {
                 //添加到购物车的是套餐
                 shoppingCart.setSetmealId(setmealId);
             }
             shoppingCart.setName(item.getName());
-            shoppingCart.setDishFlavor(item.getDishFlavor());
+            shoppingCart.setExaminationFlavor(item.getExaminationFlavor());
             shoppingCart.setNumber(item.getNumber());
             shoppingCart.setAmount(item.getAmount());
             shoppingCart.setCreateTime(LocalDateTime.now());

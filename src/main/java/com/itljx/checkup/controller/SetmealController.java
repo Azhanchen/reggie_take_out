@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itljx.checkup.common.R;
-import com.itljx.checkup.dto.DishDto;
+import com.itljx.checkup.dto.ExaminationDto;
 import com.itljx.checkup.dto.SetmealDto;
 import com.itljx.checkup.entity.Category;
-import com.itljx.checkup.entity.Dish;
+import com.itljx.checkup.entity.Examination;
 import com.itljx.checkup.entity.Setmeal;
-import com.itljx.checkup.entity.SetmealDish;
+import com.itljx.checkup.entity.SetmealExamination;
 import com.itljx.checkup.service.CategoryService;
-import com.itljx.checkup.service.DishService;
-import com.itljx.checkup.service.SetmealDishService;
+import com.itljx.checkup.service.ExaminationService;
+import com.itljx.checkup.service.SetmealExaminationService;
 import com.itljx.checkup.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -39,9 +39,9 @@ public class SetmealController {
     private CategoryService categoryService;
 
     @Autowired
-    private SetmealDishService setmealDishService;
+    private SetmealExaminationService setmealExaminationService;
     @Autowired
-    private DishService dishService;
+    private ExaminationService examinationService;
 
     /**
      * 新增套餐
@@ -80,22 +80,22 @@ public class SetmealController {
             return R.error("请求异常");
         }
 
-        if (setmealDto.getSetmealDishes()==null){
+        if (setmealDto.getSetmealExaminations()==null){
             return R.error("套餐没有菜品,请添加套餐");
         }
-        List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
+        List<SetmealExamination> setmealExaminations = setmealDto.getSetmealExaminations();
         Long setmealId = setmealDto.getId();
 
-        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SetmealDish::getSetmealId,setmealId);
-        setmealDishService.remove(queryWrapper);
+        LambdaQueryWrapper<SetmealExamination> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealExamination::getSetmealId,setmealId);
+        setmealExaminationService.remove(queryWrapper);
 
         //为setmeal_dish表填充相关的属性
-        for (SetmealDish setmealDish : setmealDishes) {
-            setmealDish.setSetmealId(setmealId);
+        for (SetmealExamination setmealExamination : setmealExaminations) {
+            setmealExamination.setSetmealId(setmealId);
         }
         //批量把setmealDish保存到setmeal_dish表
-        setmealDishService.saveBatch(setmealDishes);
+        setmealExaminationService.saveBatch(setmealExaminations);
         setmealService.updateById(setmealDto);
 
         return R.success("套餐修改成功");
@@ -179,20 +179,20 @@ public class SetmealController {
      */
     //这里前端是使用路径来传值的，要注意，不然你前端的请求都接收不到，就有点尴尬哈
     @GetMapping("/dish/{id}")
-    public R<List<DishDto>> dish(@PathVariable("id") Long SetmealId){
-        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SetmealDish::getSetmealId,SetmealId);
+    public R<List<ExaminationDto>> dish(@PathVariable("id") Long SetmealId){
+        LambdaQueryWrapper<SetmealExamination> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealExamination::getSetmealId,SetmealId);
         //获取套餐里面的所有菜品  这个就是SetmealDish表里面的数据
-        List<SetmealDish> list = setmealDishService.list(queryWrapper);
+        List<SetmealExamination> list = setmealExaminationService.list(queryWrapper);
 
-        List<DishDto> dishDtos = list.stream().map((setmealDish) -> {
-            DishDto dishDto = new DishDto();
+        List<ExaminationDto> dishDtos = list.stream().map((setmealDish) -> {
+            ExaminationDto dishDto = new ExaminationDto();
             //其实这个BeanUtils的拷贝是浅拷贝，这里要注意一下
             BeanUtils.copyProperties(setmealDish, dishDto);
             //这里是为了把套餐中的菜品的基本信息填充到dto中，比如菜品描述，菜品图片等菜品的基本信息
-            Long dishId = setmealDish.getDishId();
-            Dish dish = dishService.getById(dishId);
-            BeanUtils.copyProperties(dish, dishDto);
+            Long dishId = setmealDish.getExaminationId();
+            Examination examination = examinationService.getById(dishId);
+            BeanUtils.copyProperties(examination, dishDto);
 
             return dishDto;
         }).collect(Collectors.toList());

@@ -353,10 +353,10 @@
                     let dishList = res.data
                     const cartData = this.cartData
                     if (dishList.length > 0 && cartData.length > 0) {
-                        dishList.forEach(dish => {
+                        dishList.forEach(examination => {
                             cartData.forEach(cart => {
-                                if (dish.id === cart.dishId) {
-                                    dish.number = cart.number
+                                if (examination.id === cart.dishId) {
+                                    examination.number = cart.number
                                 }
                             })
                         })
@@ -376,10 +376,10 @@
                     let dishList = res.data
                     const cartData = this.cartData
                     if (dishList.length > 0 && cartData.length > 0) {
-                        dishList.forEach(dish => {
+                        dishList.forEach(examination => {
                             cartData.forEach(cart => {
-                                if (dish.id === cart.setmealId) {
-                                    dish.number = cart.number
+                                if (examination.id === cart.setmealId) {
+                                    examination.number = cart.number
                                 }
                             })
                         })
@@ -415,9 +415,9 @@
                 }
                 const res = await addCartApi(params)
                 if (res.code === 1) {
-                    this.dishList.forEach(dish => {
-                        if (dish.id === item.id) {
-                            dish.number = res.data.number
+                    this.dishList.forEach(examination => {
+                        if (examination.id === item.id) {
+                            examination.number = res.data.number
                         }
                     })
                     if (this.setMealDialog.show) {
@@ -441,9 +441,9 @@
                 }
                 const res = await updateCartApi(params)
                 if (res.code === 1) {
-                    this.dishList.forEach(dish => {
-                        if (dish.id === item.id) {
-                            dish.number = (res.data.number === 0 ? undefined : res.data.number)
+                    this.dishList.forEach(examination => {
+                        if (examination.id === item.id) {
+                            examination.number = (res.data.number === 0 ? undefined : res.data.number)
                         }
                     })
                     if (this.setMealDialog.show) {
@@ -473,9 +473,9 @@
                 }
                 const res = await addCartApi(params)
                 if (res.code === 1) {
-                    this.dishList.forEach(dish => {
-                        if (dish.id === (item.dishId || item.setmealId)) {
-                            dish.number = res.data.number
+                    this.dishList.forEach(examination => {
+                        if (examination.id === (item.dishId || item.setmealId)) {
+                            examination.number = res.data.number
                         }
                     })
                     console.log(this.dishList)
@@ -492,9 +492,9 @@
                 }
                 const res = await updateCartApi(params)
                 if (res.code === 1) {
-                    this.dishList.forEach(dish => {
-                        if (dish.id === (item.dishId || item.setmealId)) {
-                            dish.number = (res.data.number === 0 ? undefined : res.data.number)
+                    this.dishList.forEach(examination => {
+                        if (examination.id === (item.dishId || item.setmealId)) {
+                            examination.number = (res.data.number === 0 ? undefined : res.data.number)
                         }
                     })
                     this.getCartData()
